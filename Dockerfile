@@ -2,7 +2,9 @@ FROM zencash/gosu-base:1.10
 
 MAINTAINER cronicc@protonmail.com
 
-COPY zen-2.0.9-3-6f3cc47-amd64.deb zen-2.0.9-3-6f3cc47-amd64.deb.sha256 /root/
+ARG package=zen-2.0.9-4-7ef3498-amd64.deb
+
+COPY $package $package.sha256 /root/
 
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install apt-utils \
@@ -13,9 +15,9 @@ RUN apt-get update \
 #    && gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys \
 #    && gpg --batch --verify /root/$package signature.asc \
 #    && rm -r "$GNUPGHOME" \
-    && cd /root && sha256sum -c /root/zen-2.0.9-3-6f3cc47-amd64.deb.sha256 | grep -q OK \
-    && dpkg -i /root/zen-2.0.9-3-6f3cc47-amd64.deb \
-    && rm /root/zen-2.0.9-3-6f3cc47-amd64.deb* \
+    && cd /root && sha256sum -c /root/$package.sha256 | grep -q OK \
+    && dpkg -i /root/$package \
+    && rm /root/$package* \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
