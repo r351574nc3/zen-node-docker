@@ -2,20 +2,17 @@ FROM zencash/gosu-base:1.10
 
 MAINTAINER cronicc@protonmail.com
 
-ARG package=zen-2.0.10-e767843-amd64.deb
+ARG package=zen-2.0.10-a548c43-amd64.deb
 
-COPY $package $package.sha256 /root/
+COPY $package $package.asc /root/
 
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install apt-utils \
     && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install ca-certificates curl wget libgomp1 \
-# move to gpg verification once CI release process is set up
-#    && curl signature.asc \
-#    && export GNUPGHOME="$(mktemp -d)" \
-#    && gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys \
-#    && gpg --batch --verify /root/$package signature.asc \
-#    && rm -r "$GNUPGHOME" \
-    && cd /root && sha256sum -c /root/$package.sha256 | grep -q OK \
+    && export GNUPGHOME="$(mktemp -d)" \
+    && gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 4991B669 \
+    && gpg --batch --verify /root/$package.asc /root/$package \
+    && rm -r "$GNUPGHOME" \
     && dpkg -i /root/$package \
     && rm /root/$package* \
     && apt-get clean \
